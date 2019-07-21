@@ -10,10 +10,12 @@ WassersteinGANのpytorch実装
 <img src="https://latex.codecogs.com/gif.latex?D_{K&space;L}(p&space;\|&space;q)=\int_{X}&space;p(x)&space;\log&space;\frac{p(x)}{q(x)}&space;d&space;x">
     - p,qに関して対称性がない
     - 確率密度分布に重なりがない場合∞
+
   - JSDivergence
-<img src="D_{J S}(p \| q)=\frac{1}{2} D_{K L}\left(p \| \frac{p+q}{2}\right)+\frac{1}{2} D_{K L}\left(q \| \frac{p+q}{2}\right)">
+<img src="https://latex.codecogs.com/gif.latex?D_{J&space;S}(p&space;\|&space;q)=\frac{1}{2}&space;D_{K&space;L}\left(p&space;\|&space;\frac{p&plus;q}{2}\right)&plus;\frac{1}{2}&space;D_{K&space;L}\left(q&space;\|&space;\frac{p&plus;q}{2}\right)">
     - p,qに関して対称性がある
     - 重なりが一致する場合に急に値が変動する
+
   - Wasserstein Distance
   <img src="https://latex.codecogs.com/gif.latex?W\left(p_{r},&space;p_{g}\right)=\inf&space;_{\gamma&space;\sim&space;\Pi\left(p_{r},&space;p_{g}\right)}&space;\mathbb{E}_{(x,&space;y)&space;\sim&space;\gamma}[|&space;|&space;x-y|&space;|]">
     - 値の変化がなめらか
@@ -25,6 +27,10 @@ WassersteinGANのpytorch実装
 ## Example
 ### loss
 ### Generated Image
+- epochs: 200
+  - batch size: 64
+
+![generatedImage](https://github.com/Kyou13/pytorch-WassersteinGAN/blob/master/samples/mnist/fake_images-200.png)
 
 
 ## Requirement
