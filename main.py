@@ -34,7 +34,8 @@ def main():
   torch.backends.cudnn.benchmark = True
 
 
-@main.command() @click.option('--dataset', type=str, default='mnist')
+@main.command() 
+@click.option('--dataset', type=str, default='mnist')
 @click.option('--data', type=str, default='data')
 def train(dataset, data):
   device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -42,6 +43,7 @@ def train(dataset, data):
   sample_dir = os.path.join('samples', dataset)
   weights_dir = os.path.join('weights', dataset)
   os.makedirs(sample_dir, exist_ok=True)
+  os.makedirs(weights_dir, exist_ok=True)
 
   dataset = torchvision.datasets.MNIST(root=data, download=True, train=True,
                                        transform=transforms.Compose([
@@ -73,8 +75,8 @@ def train(dataset, data):
   total_step = len(data_loader)
   for epoch in range(params['epochs']):
     for i, (images, _) in enumerate(data_loader):
-      images = images.reshape(params['batch_size'], -1).to(device)
       b_size = images.size(0)
+      images = images.reshape(b_size, -1).to(device)
 
       # real_labels = torch.ones(b_size).to(device)
       # fake_labels = torch.zeros(b_size).to(device)
@@ -91,12 +93,11 @@ def train(dataset, data):
 
       # weightの範囲をクリップ
       for p in D.parameters():
-        p.data.clamp_(-params['clip_value'], params['clip_value'])
-
+        p.data.clamp_(-params['clip_value'], params['clip_value']) 
       real_score = outputs
 
       # Train generator
-      if i % params['n_critic']:
+      if i % params['n_critic'] == 0:
 
         g_optimizer.zero_grad()
         fake_images = G(z)
@@ -112,13 +113,17 @@ def train(dataset, data):
               .format(epoch, params['epochs'], i + 1, total_step, d_loss.item(), g_loss.item(),
                       real_score.mean().item(), fake_score.mean().item()))  # .item():ゼロ次元Tensorから値を取り出す
 
-      g_losses.append(g_loss.item())
+        g_losses.append(g_loss.item())
+      try:
+        g_loss
+      except:
+        g_losses.append(g_losses[-1])
       d_losses.append(d_loss.item())
 
     if (epoch + 1) == 1:
-      save_image(utils.denorm(images.reshape(b_size, params['image_size'], -1)), os.path.join(
+      save_image(utils.denorm(images.reshape(b_size,1, 28, 28)), os.path.join(
           sample_dir, 'real_images.png'))
-    save_image(utils.denorm(fake_images.reshape(b_size, params['image_size'], -1)), os.path.join(
+    save_image(utils.denorm(fake_images.reshape(b_size,1, 28, 28)), os.path.join(
         sample_dir, 'fake_images-{}.png'.format(epoch + 1)))
 
   torch.save(G.state_dict(), os.path.join(weights_dir, 'G.ckpt'))
@@ -143,13 +148,13 @@ def generate(dataset):
   weights_dir = os.path.join('weights', dataset)
   os.makedirs(sample_dir, exist_ok=True)
 
-  G = models.Generator(params['nz'], params['ngf'], params['nc'])
+  G = models.Generator(params['nz'], params['image_size'])
   G.load_state_dict(torch.load(os.path.join(weights_dir, 'G.ckpt')))
   G.eval()
   G = G.to(device)
 
   with torch.no_grad():
-    z = torch.randn(params['batch_size'], params['nz'], 1, 1).to(device)
+    z = torch.FloatTensor(b_size, params['nz']).uniform_(0, 1).to(device)
     fake_images = G(z)
 
   dt_now = datetime.datetime.now()
