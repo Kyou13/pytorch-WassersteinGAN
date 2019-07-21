@@ -22,7 +22,7 @@ WassersteinGANのpytorch実装
     
 - リプシッツ写像
 <img src="https://latex.codecogs.com/gif.latex?d_{Y}\left(f(x),&space;f\left(x^{\prime}\right)\right)&space;\leq&space;\lambda&space;d_{X}\left(x,&space;x^{\prime}\right)&space;\quad\left(\forall&space;x,&space;\forall&space;x^{\prime}&space;\in&space;X\right)">
-を満たすとき，<img src="https://latex.codecogs.com/gif.latex?f">は*リプシッツ***であるという
+を満たすとき，<img src="https://latex.codecogs.com/gif.latex?f">はリプシッツであるという
 
 ## Example
 ### loss
